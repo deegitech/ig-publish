@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# ig-publish working files: never commit state, journals, logs, media or tokens
+state/
+media/
+*.jsonl
+*.done
+*.lock
+schedule.log*
+ig-state*.json
+prep.json
+token
+token.txt
+*.token
+.env
+.env.*
+data/
+secrets/

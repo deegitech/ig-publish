@@ -1,0 +1,30 @@
+# /etc/systemd/system/ig-publish-token.service
+# Writes /run/ig-publish/token (tmpfs, mode 0600, owned by the container user) from AWS SSM before Docker
+# starts, so a container restarted by `--restart unless-stopped` finds the token after a reboot.
+# A failed fetch (no network or instance credentials yet at boot) is retried every 30 s until it succeeds
+# (Restart= on a oneshot unit needs systemd 244 or newer, e.g. Amazon Linux 2023 or Ubuntu 22.04).
+# Rotate: update the SSM parameter, then `sudo systemctl restart ig-publish-token`.
+[Unit]
+Description=Fetch the ig-publish access token from AWS SSM into tmpfs
+Wants=network-online.target
+After=network-online.target
+Before=docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+# Placeholders: use your own region and parameter name.
+Environment=AWS_REGION=us-east-1
+Environment=IG_TOKEN_PARAM=/example/ig-publish/access-token
+Environment=IG_TOKEN_DIR=/run/ig-publish
+Environment=IG_TOKEN_OWNER=10001:10001
+ExecStart=/usr/local/sbin/fetch-ig-token.sh
+ExecStop=/bin/rm -f /run/ig-publish/token
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

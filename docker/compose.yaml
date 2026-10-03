@@ -1,0 +1,39 @@
+# ig-publish scheduler with Docker Compose.
+#
+#   mkdir -p data && sudo chown -R 10001:10001 data     # the container runs as uid/gid 10001
+#   cp examples/ig-publish.server.json data/ig-publish.json   # then edit it
+#   docker compose -f docker/compose.yaml run --rm ig-publish doctor      # setup checks, with fixes
+#   docker compose -f docker/compose.yaml run --rm ig-publish schedule dry
+#   docker compose -f docker/compose.yaml up -d --build          # starts `schedule run --apply`: it publishes
+#
+# The token is NOT in this file or in the environment: the host writes it to /run/ig-publish/token
+# (tmpfs, mode 0600, owner 10001) - see docs/deploy-ec2.md - and the directory is mounted read-only.
+services:
+  ig-publish:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ig-publish:0.1.0
+    command: ["schedule", "run", "--apply"]   # the scheduler publishes due lines; the image default only previews
+    init: true                  # tini as PID 1: signals reach the scheduler, zombies are reaped
+    restart: unless-stopped
+    stop_grace_period: 10m      # SIGTERM lets a running publish finish and be recorded
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 128
+    environment:
+      TZ: UTC
+    volumes:
+      - ../data:/data
+      - /run/ig-publish:/run/secrets/ig-publish:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

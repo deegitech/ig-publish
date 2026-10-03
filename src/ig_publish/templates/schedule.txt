@@ -1,0 +1,7 @@
+# ig-publish schedule: one run per line, "YYYY-MM-DD HH:MM key[,key...]".
+# Times are in [schedule] timezone (default: this machine's time zone). Lines run in file order.
+# Every line runs `ig-publish publish --keys KEYS --apply` once; outcomes are recorded in the done file.
+# Preview: `ig-publish schedule dry`. Start: `ig-publish schedule run --apply` (or `schedule once --apply` from cron).
+#
+# 2030-11-03 18:30 story-teaser-1,story-teaser-2
+# 2030-11-04 12:00 reel-launch

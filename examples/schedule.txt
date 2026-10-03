@@ -1,0 +1,7 @@
+# ig-publish schedule. One run per line: "YYYY-MM-DD HH:MM key[,key...]".
+# Times are in [schedule] timezone (UTC in ig-publish.server.json). Lines run in file order, one at a time,
+# at least gap_seconds apart. The file is re-read every minute, so you can append lines while it runs.
+# Preview: `ig-publish schedule dry`. Start: `ig-publish schedule run --apply`.
+2030-11-03 18:30 launch-story-1,launch-story-2
+2030-11-04 12:00 howto-story-1
+2030-12-01 17:00 reel-holiday      # the season window must be open at that time

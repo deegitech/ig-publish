@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/deegitech/ig-publish/main/src/ig_publish/schemas/config.schema.json",
+  "_comment": "Configuration for the Docker / EC2 deployment (docs/deploy-ec2.md). Save it as /srv/ig-publish/ig-publish.json on the host; inside the container that directory is /data. The notifier reads the webhook URL from /data/secrets/webhook (step 5 of the guide); remove notify_command if you do not want notifications. All IDs are placeholders.",
+  "account": {
+    "ig_user_id": "17841401234567890",
+    "username": "your.brand"
+  },
+  "api": {
+    "version": "v26.0"
+  },
+  "paths": {
+    "manifest": "manifest.json",
+    "source_root": ".",
+    "media_dir": "media",
+    "state": "state/ig-state.json",
+    "journal": "state/ig-journal.jsonl"
+  },
+  "token": {
+    "source": "file",
+    "path": "/run/secrets/ig-publish/token"
+  },
+  "spacing": {
+    "story_seconds": 10,
+    "reel_seconds": 1800
+  },
+  "captions": {
+    "required_text": ["Link in bio."],
+    "max_hashtags": 8
+  },
+  "seasons": {
+    "holiday": {
+      "start": "2030-12-01T00:00:00-08:00",
+      "end": "2031-01-01T00:00:00+14:00",
+      "caption_words": ["christmas", "xmas"]
+    }
+  },
+  "prep": {
+    "threads": 1,
+    "nice": 15
+  },
+  "schedule": {
+    "file": "schedule.txt",
+    "timezone": "UTC",
+    "done_file": "state/schedule.done",
+    "log_file": "state/schedule.log",
+    "notify_command": ["python3", "/data/notify-webhook.py", "--url-file", "/data/secrets/webhook"]
+  }
+}

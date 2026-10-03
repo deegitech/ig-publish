@@ -1,0 +1,8 @@
+# Only what the image needs: pyproject, README, LICENSE and src/.
+*
+!pyproject.toml
+!README.md
+!LICENSE
+!src
+**/__pycache__
+**/*.pyc

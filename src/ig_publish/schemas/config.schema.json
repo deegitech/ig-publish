@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/deegitech/ig-publish/main/src/ig_publish/schemas/config.schema.json",
+  "title": "ig-publish configuration (JSON form)",
+  "description": "The same structure as ig-publish.toml. Relative paths are resolved against the directory of the configuration file. ig-publish rejects unknown keys.",
+  "type": "object",
+  "required": [
+    "account"
+  ],
+  "properties": {
+    "account": {
+      "type": "object",
+      "required": [
+        "ig_user_id"
+      ],
+      "properties": {
+        "ig_user_id": {
+          "type": "string",
+          "pattern": "^[0-9]{5,25}$"
+        },
+        "username": {
+          "type": "string"
+        },
+        "page_id": {
+          "type": "string",
+          "pattern": "^[0-9]{5,25}$"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+$"
+        },
+        "usage_stop_percent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "paths": {
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "type": "string"
+        },
+        "source_root": {
+          "type": "string"
+        },
+        "media_dir": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "journal": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "token": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "enum": [
+            "env",
+            "file",
+            "keychain",
+            "ssm"
+          ]
+        },
+        "env_var": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "path": {
+          "type": "string"
+        },
+        "keychain_service": {
+          "type": "string"
+        },
+        "keychain_account": {
+          "type": "string"
+        },
+        "ssm_parameter": {
+          "type": "string"
+        },
+        "ssm_region": {
+          "type": "string"
+        },
+        "ssm_profile": {
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "spacing": {
+      "type": "object",
+      "properties": {
+        "story_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reel_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "properties": {
+        "burst_window_hours": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 48
+        },
+        "burst_max_posts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "rate_hold_minutes": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "container_max_age_hours": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 23.5
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "poll_seconds": {
+          "type": "number",
+          "minimum": 0.001
+        },
+        "poll_timeout_seconds": {
+          "type": "number",
+          "minimum": 0.01
+        },
+        "guard_wait_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "republish_wait_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rate_retry_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "read_retry_backoff_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "http_timeout_seconds": {
+          "type": "number",
+          "minimum": 1
+        },
+        "upload_timeout_seconds": {
+          "type": "number",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "captions": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "max_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2200
+        },
+        "min_hashtags": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "max_hashtags": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "required_text": {
+          "$ref": "#/$defs/strings"
+        },
+        "banned_words": {
+          "$ref": "#/$defs/strings"
+        },
+        "licensed_music": {
+          "$ref": "#/$defs/strings"
+        },
+        "forbid_curly_quotes": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "sources": {
+      "type": "object",
+      "properties": {
+        "deny": {
+          "$ref": "#/$defs/strings"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "seasons": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,31}$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "start",
+          "end"
+        ],
+        "properties": {
+          "start": {
+            "type": "string",
+            "description": "ISO 8601 with a UTC offset, inclusive"
+          },
+          "end": {
+            "type": "string",
+            "description": "ISO 8601 with a UTC offset, exclusive"
+          },
+          "caption_words": {
+            "$ref": "#/$defs/strings"
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(_|\\$)": {}
+        }
+      }
+    },
+    "prep": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 4096
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 4096
+        },
+        "fps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "fit": {
+          "enum": [
+            "pad",
+            "crop",
+            "stretch"
+          ]
+        },
+        "crf": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 51
+        },
+        "preset": {
+          "enum": [
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "faster",
+            "fast",
+            "medium",
+            "slow",
+            "slower",
+            "veryslow"
+          ]
+        },
+        "max_video_kbps": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 25000
+        },
+        "audio_kbps": {
+          "type": "integer",
+          "minimum": 32,
+          "maximum": 128
+        },
+        "threads": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "nice": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 19
+        },
+        "still_seconds": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "done_file": {
+          "type": "string"
+        },
+        "log_file": {
+          "type": "string"
+        },
+        "gap_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_late_hours": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 336
+        },
+        "poll_seconds": {
+          "type": "number",
+          "minimum": 0.05
+        },
+        "retry_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "notify_command": {
+          "$ref": "#/$defs/strings"
+        },
+        "command": {
+          "$ref": "#/$defs/strings"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(_|\\$)": {}
+      }
+    }
+  },
+  "patternProperties": {
+    "^(_|\\$)": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

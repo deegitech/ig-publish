@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/deegitech/ig-publish/main/src/ig_publish/schemas/manifest.schema.json",
+  "title": "ig-publish manifest",
+  "description": "What to publish and in which order. The order of `items` is the publishing order. ig-publish validates the same rules itself (plus file existence, caption rules and season names from the configuration).",
+  "type": "object",
+  "required": ["items"],
+  "properties": {
+    "ig_user_id": {
+      "description": "Optional. If present it must equal [account] ig_user_id in the configuration.",
+      "type": "string",
+      "pattern": "^[0-9]{5,25}$"
+    },
+    "note": {"type": "string"},
+    "notes": {},
+    "items": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/item"}
+    }
+  },
+  "patternProperties": {
+    "^(_|x-|\\$)": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["key", "kind", "group", "src"],
+      "properties": {
+        "key": {
+          "description": "Stable identifier used in the state file, on the command line and in the schedule.",
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+        },
+        "kind": {
+          "description": "story (STORIES container, no caption) or reel (REELS container).",
+          "enum": ["story", "reel"]
+        },
+        "group": {
+          "description": "Free label used by --only. For stories: the Highlight you plan to add them to (adding is manual).",
+          "type": "string",
+          "minLength": 1
+        },
+        "src": {
+          "description": "Source video (or still image for a story) relative to [paths] source_root.",
+          "type": "string",
+          "minLength": 1
+        },
+        "caption": {
+          "description": "Reels only. At most 2,200 characters, 30 hashtags and 20 @-mentions.",
+          "type": "string",
+          "maxLength": 2200
+        },
+        "share_to_feed": {
+          "description": "Reels only. Also show the reel in the main grid (default true).",
+          "type": "boolean"
+        },
+        "thumb_offset": {
+          "description": "Reels only. Cover frame position in milliseconds from the start.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "season": {
+          "description": "Name of a [seasons.NAME] table: publish only inside its window; its caption words are allowed.",
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,31}$"
+        },
+        "still_seconds": {
+          "description": "For still-image sources: length of the generated video in seconds.",
+          "type": "number",
+          "minimum": 3,
+          "maximum": 60
+        },
+        "needs_approval": {
+          "description": "Hold this item back until a run passes --approve KEY. The value is the reason.",
+          "type": "string",
+          "minLength": 1
+        },
+        "already_live": {"$ref": "#/$defs/already_live"},
+        "note": {"type": "string"},
+        "notes": {}
+      },
+      "patternProperties": {
+        "^(_|x-)": {}
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "story"}}},
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["caption"]},
+                {"required": ["share_to_feed"]},
+                {"required": ["thumb_offset"]}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "already_live": {
+      "description": "The item is already on the account (posted outside this tool); it counts as published.",
+      "type": "object",
+      "required": ["media_id", "permalink"],
+      "properties": {
+        "media_id": {"type": "string", "pattern": "^[0-9]{6,25}$"},
+        "permalink": {"type": "string", "pattern": "^https://www\\.instagram\\.com/"},
+        "at": {"type": "string"},
+        "via": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

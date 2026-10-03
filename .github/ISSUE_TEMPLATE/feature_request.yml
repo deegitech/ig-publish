@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an improvement or a new capability.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and what gets in the way?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How could ig-publish help? Note anything that affects the safety guarantees (double posts, holds, token handling).
+  - type: textarea
+    id: api
+    attributes:
+      label: Instagram API support
+      description: Does the official API support this? Links to Meta's documentation help a lot.

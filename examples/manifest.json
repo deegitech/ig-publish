@@ -1,0 +1,60 @@
+{
+  "$schema": "https://raw.githubusercontent.com/deegitech/ig-publish/main/src/ig_publish/schemas/manifest.schema.json",
+  "ig_user_id": "17841401234567890",
+  "note": "Every file name and ID here is a placeholder. Order = publishing order. The holiday item needs a [seasons.holiday] table in the configuration (see ig-publish.server.json).",
+  "items": [
+    {
+      "key": "launch-story-1",
+      "kind": "story",
+      "group": "LAUNCH",
+      "src": "videos/launch-story-1.mp4"
+    },
+    {
+      "key": "launch-story-2",
+      "kind": "story",
+      "group": "LAUNCH",
+      "src": "images/launch-card.png",
+      "still_seconds": 6,
+      "note": "A still image becomes a 6-second video story during prep."
+    },
+    {
+      "key": "howto-story-1",
+      "kind": "story",
+      "group": "HOW-TO",
+      "src": "videos/howto-1.mp4"
+    },
+    {
+      "key": "reel-trailer",
+      "kind": "reel",
+      "group": "REELS",
+      "src": "videos/reel-trailer.mp4",
+      "caption": "The trailer.\nLink in bio.\n#example #trailer",
+      "share_to_feed": true,
+      "thumb_offset": 1200,
+      "already_live": {
+        "media_id": "123456789012345",
+        "permalink": "https://www.instagram.com/reel/EXAMPLE1/",
+        "at": "2030-01-15T12:00:00+00:00",
+        "via": "posted in the Instagram app"
+      }
+    },
+    {
+      "key": "reel-holiday",
+      "kind": "reel",
+      "group": "REELS",
+      "src": "videos/reel-holiday.mp4",
+      "season": "holiday",
+      "caption": "Our Christmas special is live.\nLink in bio.\n#example #christmas",
+      "thumb_offset": 800
+    },
+    {
+      "key": "reel-own-music",
+      "kind": "reel",
+      "group": "REELS",
+      "src": "videos/reel-own-music.mp4",
+      "caption": "Thirty seconds of gameplay.\nLink in bio.\n#example #gameplay",
+      "needs_approval": "decide whether to post the licensed-music cut by hand in the app instead",
+      "x-campaign": "custom fields start with x- or _"
+    }
+  ]
+}

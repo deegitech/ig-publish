@@ -1,0 +1,105 @@
+# ig-publish configuration.
+# Relative paths are resolved against the directory of this file.
+# Unknown keys are errors (a typo must never be ignored silently).
+# Never put the access token in this file; see [token]. Step by step: docs/setup.md. Check it all: ig-publish doctor
+
+[account]
+# Numeric ID of the Instagram Business account linked to your Facebook Page - not the @username.
+# Find it with: GET /me/accounts?fields=name,instagram_business_account (Graph API Explorer).
+ig_user_id = "17841401234567890"
+# Optional: `ig-publish doctor` and `check` fail if the token sees a different username.
+# username = "your.brand"
+# Optional: the Facebook Page linked to the account (otherwise found through me/accounts).
+# page_id = "1234567890"
+
+[api]
+version = "v26.0"            # pin the Graph API version you tested with
+usage_stop_percent = 85      # stop sending requests above this X-App-Usage / X-Business-Use-Case-Usage value
+
+[paths]
+manifest = "manifest.json"
+source_root = "."                    # manifest "src" paths are relative to this
+media_dir = "media"                  # prepared copies: <media_dir>/<key>.mp4 and prep.json
+state = "state/ig-state.json"        # what was published (the single source of truth; keep backups)
+journal = "state/ig-journal.jsonl"   # append-only log of every API write
+
+[token]
+# One source: "env", "file", "keychain" (macOS) or "ssm" (AWS SSM Parameter Store via the aws CLI).
+source = "env"
+env_var = "IG_ACCESS_TOKEN"
+# source = "file": a file only you can read (chmod 600), e.g. a tmpfs file or a mounted secret.
+# path = "/run/secrets/ig-publish/token"
+# source = "keychain": a generic password. Type this line, copy the token, then press Enter (never leave -w empty:
+# that prompt cuts input at 128 characters), then clear the clipboard with `pbcopy </dev/null`:
+#   security add-generic-password -U -a "$USER" -s ig-publish -w "$(pbpaste)"
+# keychain_service = "ig-publish"
+# source = "ssm": a SecureString parameter, read with `aws ssm get-parameter --with-decryption`.
+# ssm_parameter = "/example/ig-publish/access-token"
+# ssm_region = "us-east-1"
+
+[spacing]
+story_seconds = 10      # between two stories of one run
+reel_seconds = 1800     # between two reels, also across runs (checked against the live account)
+
+[safety]
+burst_window_hours = 3  # if the account already has burst_max_posts posts in this window,
+burst_max_posts = 10    # --apply waits (exit 75) instead of adding more
+rate_hold_minutes = 60  # minimum hold after a rate-limit answer
+container_max_age_hours = 23   # containers expire after 24 h; older ones are re-created
+
+# Polling, retries and timeouts. The defaults suit most accounts; raise poll_timeout_seconds and
+# upload_timeout_seconds for long reels or a slow uplink.
+# [timing]
+# poll_seconds = 15                # how often a processing container is read
+# poll_timeout_seconds = 600       # give up (nothing is published) if a container is not FINISHED by then
+# guard_wait_seconds = 10          # between container reads after a media_publish error
+# republish_wait_seconds = 45      # before retrying media_publish after error 2207008
+# rate_retry_seconds = 60          # before re-reading after an Instagram usage limit (x the attempt number)
+# read_retry_backoff_seconds = 5   # between retries of a failed read (x the attempt number)
+# http_timeout_seconds = 60        # per API request (POSTs such as media_publish get twice this)
+# upload_timeout_seconds = 900     # per upload
+
+[captions]
+required = true          # every reel needs a caption (the duplicate-caption guard matches on it)
+max_length = 2200        # Instagram's limit is 2,200 characters
+min_hashtags = 0
+max_hashtags = 30        # Instagram's limit is 30
+required_text = []      # e.g. ["Link in bio."]
+banned_words = []        # case-insensitive substring match, e.g. ["giveaway"]
+licensed_music = []      # titles/artists of licensed tracks that must never be named, e.g. ["Song Title"]
+forbid_curly_quotes = false
+
+[sources]
+# Regular expressions matched against each item's "src"; a match makes the manifest invalid.
+# Example: keep drafts, and cuts meant for adding licensed music by hand in the app, out of the API queue.
+deny = []                # e.g. ['-draft\.mp4$', '(^|/)licensed-audio/']
+
+# Seasons: an item with "season": "holiday" is only published inside this window (before: exit 75,
+# after: exit 1), and the caption words below may only appear in items of this season.
+# [seasons.holiday]
+# start = "2030-12-01T00:00:00-08:00"
+# end = "2031-01-01T00:00:00+14:00"
+# caption_words = ["christmas", "xmas"]
+
+[prep]
+width = 1080
+height = 1920
+fps = 30
+fit = "pad"              # pad (letterbox), crop or stretch when the source is not 9:16
+crf = 20
+max_video_kbps = 4500
+audio_kbps = 128         # Instagram's audio limit is 128 kbps
+threads = 2              # keep encoding light on small servers
+nice = 10
+still_seconds = 5        # length of a story made from a still image (3-60)
+
+[schedule]
+file = "schedule.txt"
+# timezone = "Europe/Berlin"   # IANA name for the schedule times; default: this machine's time zone
+done_file = "state/schedule.done"
+log_file = "state/schedule.log"
+gap_seconds = 1860       # at least this long between the end of one run and the start of the next
+max_late_hours = 6       # a line this late is skipped ("missed") instead of posting in a burst
+poll_seconds = 60
+retry_seconds = 900      # after an exit 75, try the line again this often
+notify_command = []      # e.g. ["/usr/local/bin/notify-me"] - the message is appended as the last argument

@@ -1,0 +1,15 @@
+{
+  "_comment": "Posts that were published outside ig-publish (by hand or by another tool). `ig-publish import import-record.json --apply` records them as published, so they are never posted again and the account check does not flag them. Give either the manifest key, or src + product (STORY or REELS). Placeholder IDs.",
+  "story-posted-in-app": {
+    "key": "launch-story-1",
+    "media_id": "123456789012346",
+    "at": "2030-11-03T18:31:00+00:00",
+    "permalink": "https://www.instagram.com/stories/your.brand/123456789012346/"
+  },
+  "story-from-old-script": {
+    "src": "launch-card.png",
+    "product": "STORY",
+    "media_id": "123456789012347",
+    "at": "2030-11-03T18:32:00+00:00"
+  }
+}

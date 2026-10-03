@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/deegitech/ig-publish/main/src/ig_publish/schemas/manifest.schema.json",
+  "note": "Order = publishing order. Stories: group = the Highlight you plan to add them to (a manual step in the app). The last reel published ends up top-left on the grid.",
+  "items": [
+    {
+      "key": "story-teaser-1",
+      "kind": "story",
+      "group": "LAUNCH",
+      "src": "videos/story-teaser-1.mp4"
+    },
+    {
+      "key": "story-teaser-2",
+      "kind": "story",
+      "group": "LAUNCH",
+      "src": "images/story-teaser-2.png",
+      "still_seconds": 5
+    },
+    {
+      "key": "reel-launch",
+      "kind": "reel",
+      "group": "REELS",
+      "src": "videos/reel-launch.mp4",
+      "caption": "Our first reel.\nMade with ig-publish.\n#example #reels",
+      "share_to_feed": true,
+      "thumb_offset": 1500
+    }
+  ]
+}
