@@ -131,7 +131,7 @@ class DoneFile:
                     if len(parts) >= 2:
                         out.append((parts[0], parts[1], parts[2] if len(parts) > 2 else ''))
         except FileNotFoundError:
-            pass
+            pass  # no record file yet: nothing has finished
         return out
 
     def status(self, line_id: str) -> str | None:

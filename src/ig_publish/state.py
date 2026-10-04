@@ -100,28 +100,27 @@ def run_lock(path: str | os.PathLike[str], what: str, required: bool = True) -> 
     path = os.fspath(path)
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
-    f = os.fdopen(fd, 'r+', encoding='utf-8')
-    got = False
-    try:
+    with os.fdopen(fd, 'r+', encoding='utf-8') as f:
+        got = False
         try:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            got = True
-        except OSError:
-            if required:
-                f.seek(0)
-                who = f.read().strip()[:200]
-                raise TemporaryStop(f'Stopped: another ig-publish run holds the lock ({who or "lock held"}). Stopped '
-                                    f'so nothing is posted twice; run the command again when it has finished. '
-                                    f'Lock file: {path}') from None
-        if got:
-            f.seek(0)
-            f.truncate()
-            f.write(f'pid {os.getpid()} | {what} | {now_iso()}\n')
-            f.flush()
-        yield got
-    finally:
-        if got:
-            with contextlib.suppress(OSError):
+            try:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                got = True
+            except OSError:
+                if required:
+                    f.seek(0)
+                    who = f.read().strip()[:200]
+                    raise TemporaryStop(f'Stopped: another ig-publish run holds the lock ({who or "lock held"}). '
+                                        f'Stopped so nothing is posted twice; run the command again when it has '
+                                        f'finished. Lock file: {path}') from None
+            if got:
                 f.seek(0)
                 f.truncate()
-        f.close()
+                f.write(f'pid {os.getpid()} | {what} | {now_iso()}\n')
+                f.flush()
+            yield got
+        finally:
+            if got:
+                with contextlib.suppress(OSError):
+                    f.seek(0)
+                    f.truncate()

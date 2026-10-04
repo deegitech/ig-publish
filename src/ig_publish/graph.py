@@ -133,7 +133,7 @@ class GraphClient:
             try:
                 best = max(best, int(float(d.get(k) or 0)))
             except (TypeError, ValueError):
-                pass
+                pass  # skip a malformed value; the others still count
         return best
 
     def _buc_rows(self) -> list[dict[str, Any]]:
@@ -158,7 +158,7 @@ class GraphClient:
             try:
                 best = max(best, int(float(u.get('estimated_time_to_regain_access') or 0)))
             except (TypeError, ValueError):
-                pass
+                pass  # skip a malformed value; the others still count
         return best
 
     # ------------------------------------------------------------------ transport

@@ -98,16 +98,20 @@ def recipe(p: PrepSettings) -> str:
     return hashlib.sha256(json.dumps([video_filter(p), v, a, mux, 'r1']).encode()).hexdigest()[:12]
 
 
-def sha256(path: str, _cache: dict[tuple[str, int, int], str] = {}) -> str:  # noqa: B006 - deliberate memo
+_SHA256_MEMO: dict[tuple[str, int, int], str] = {}
+
+
+def sha256(path: str) -> str:
+    """SHA-256 of a file, memoised by (absolute path, size, mtime)."""
     st = os.stat(path)
     k = (os.path.abspath(path), st.st_size, st.st_mtime_ns)
-    if k not in _cache:
+    if k not in _SHA256_MEMO:
         h = hashlib.sha256()
         with open(path, 'rb') as f:
             for b in iter(lambda: f.read(1 << 20), b''):
                 h.update(b)
-        _cache[k] = h.hexdigest()
-    return _cache[k]
+        _SHA256_MEMO[k] = h.hexdigest()
+    return _SHA256_MEMO[k]
 
 
 # ---------------------------------------------------------------------------------------------- probing
@@ -271,7 +275,7 @@ def _lower_priority(niceness: int):
         try:
             os.nice(niceness)
         except (OSError, AttributeError):
-            pass
+            pass  # best effort: the encode runs at normal priority
     return fn
 
 
